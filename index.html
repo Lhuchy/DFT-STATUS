@@ -20,8 +20,12 @@
         }
         .bar-chart-container {
             position: relative;
-            height: 50vh; /* Aumentar altura para melhor visualização */
+            height: 50vh;
             width: 100%;
+        }
+        .tab-active {
+            border-color: #4f46e5;
+            color: #4f46e5;
         }
     </style>
 </head>
@@ -29,63 +33,114 @@
 
     <div class="max-w-7xl mx-auto">
         <!-- Cabeçalho -->
-        <header class="mb-8 text-center">
+        <header class="mb-6 text-center">
             <h1 class="text-3xl sm:text-4xl font-bold text-gray-900 mb-2">Dashboard de Análise DFT</h1>
-            <p class="text-gray-600">Carregue seu arquivo .xlsx para visualizar os dados mais recentes.</p>
+            <p class="text-gray-600">Siga as abas para carregar seu arquivo e visualizar os dados.</p>
         </header>
 
-        <!-- Seção de Upload -->
-        <div class="mb-8 bg-white p-6 rounded-xl shadow-md flex flex-col items-center">
-            <label for="fileInput" class="block text-lg font-medium text-gray-700 mb-4">Selecione o arquivo XLSX:</label>
-            <label class="cursor-pointer bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-6 rounded-lg transition duration-300 shadow-md">
-                <span>Carregar Arquivo</span>
-                <input type="file" id="fileInput" class="hidden" accept=".xlsx, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet">
-            </label>
-            <p id="fileName" class="text-gray-500 mt-3 text-sm"></p>
+        <!-- Navegação das Abas -->
+        <div class="mb-8 border-b border-gray-200">
+            <nav class="-mb-px flex space-x-8" aria-label="Tabs">
+                <button id="tab-upload" class="tab-active whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm">
+                    Carregar Arquivo
+                </button>
+                <button id="tab-dashboard" class="border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm">
+                    Dashboard Interativo
+                </button>
+                <button id="tab-report" class="border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm">
+                    Relatório
+                </button>
+            </nav>
         </div>
 
-        <!-- Seção de Métricas Principais -->
-        <div id="metrics-section" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8 hidden">
-            <div class="bg-white p-6 rounded-xl shadow-md text-center">
-                <h3 class="text-gray-500 text-sm font-medium uppercase tracking-wider">Total de DFTs</h3>
-                <p id="totalUnidades" class="text-4xl font-bold text-gray-900 mt-2">-</p>
-            </div>
-            <div class="bg-white p-6 rounded-xl shadow-md text-center">
-                <h3 class="text-gray-500 text-sm font-medium uppercase tracking-wider">Total de Pessoas</h3>
-                <p id="totalPessoas" class="text-4xl font-bold text-gray-900 mt-2">-</p>
-            </div>
-            <div class="bg-white p-6 rounded-xl shadow-md text-center">
-                <h3 class="text-gray-500 text-sm font-medium uppercase tracking-wider">Pessoas c/ Esforço</h3>
-                <p id="pessoasComEsforco" class="text-4xl font-bold text-green-600 mt-2">-</p>
-            </div>
-            <div class="bg-white p-6 rounded-xl shadow-md text-center">
-                <h3 class="text-gray-500 text-sm font-medium uppercase tracking-wider">Faltam Preencher</h3>
-                <p id="pessoasFaltando" class="text-4xl font-bold text-red-600 mt-2">-</p>
+        <!-- Conteúdo da Aba Carregar Arquivo -->
+        <div id="uploadContent">
+            <div class="bg-white p-8 rounded-xl shadow-md flex flex-col items-center">
+                <label for="fileInput" class="block text-xl font-medium text-gray-700 mb-4">Selecione o arquivo XLSX</label>
+                <p class="text-gray-500 mb-6">Clique no botão abaixo para escolher o seu relatório.</p>
+                <label class="cursor-pointer bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-6 rounded-lg transition duration-300 shadow-md">
+                    <span>Procurar Arquivo</span>
+                    <input type="file" id="fileInput" class="hidden" accept=".xlsx, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet">
+                </label>
+                <p id="fileName" class="text-gray-500 mt-4 text-sm"></p>
             </div>
         </div>
-        
-        <!-- Seção de Gráficos -->
-        <div id="charts-section" class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8 hidden">
-            <div class="bg-white p-6 rounded-xl shadow-md">
-                <h2 class="text-xl font-semibold text-gray-900 mb-4 text-center">Entregas Adicionadas</h2>
-                <div class="chart-container">
-                    <canvas id="entregasChart"></canvas>
+
+        <!-- Conteúdo da Aba Dashboard -->
+        <div id="dashboardContent" class="hidden">
+             <div id="dashboard-placeholder" class="text-center text-gray-500 mt-10">
+                <p>Carregue um arquivo na aba "Carregar Arquivo" para gerar os gráficos.</p>
+            </div>
+            <!-- Seção de Métricas Principais -->
+            <div id="metrics-section" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8 hidden">
+                <div class="bg-white p-6 rounded-xl shadow-md text-center">
+                    <h3 class="text-gray-500 text-sm font-medium uppercase tracking-wider">Total de DFTs</h3>
+                    <p id="totalUnidades" class="text-4xl font-bold text-gray-900 mt-2">-</p>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-md text-center">
+                    <h3 class="text-gray-500 text-sm font-medium uppercase tracking-wider">Total de Pessoas</h3>
+                    <p id="totalPessoas" class="text-4xl font-bold text-gray-900 mt-2">-</p>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-md text-center">
+                    <h3 class="text-gray-500 text-sm font-medium uppercase tracking-wider">Pessoas c/ Esforço</h3>
+                    <p id="pessoasComEsforco" class="text-4xl font-bold text-green-600 mt-2">-</p>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-md text-center">
+                    <h3 class="text-gray-500 text-sm font-medium uppercase tracking-wider">Faltam Preencher</h3>
+                    <p id="pessoasFaltando" class="text-4xl font-bold text-red-600 mt-2">-</p>
                 </div>
             </div>
-            <div class="bg-white p-6 rounded-xl shadow-md">
-                <h2 class="text-xl font-semibold text-gray-900 mb-4 text-center">Conclusão do Esforço (100%)</h2>
-                <div class="chart-container">
-                    <canvas id="esforcoChart"></canvas>
+            
+            <!-- Seção de Gráficos -->
+            <div id="charts-section" class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8 hidden">
+                <div class="bg-white p-6 rounded-xl shadow-md">
+                    <h2 class="text-xl font-semibold text-gray-900 mb-4 text-center">Entregas Adicionadas</h2>
+                    <div class="chart-container">
+                        <canvas id="entregasChart"></canvas>
+                    </div>
                 </div>
+                <div class="bg-white p-6 rounded-xl shadow-md">
+                    <h2 class="text-xl font-semibold text-gray-900 mb-4 text-center">Conclusão do Esforço (≥100%)</h2>
+                    <div class="chart-container">
+                        <canvas id="esforcoChart"></canvas>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="bar-chart-section" class="bg-white p-6 rounded-xl shadow-md hidden">
+                 <h2 class="text-xl font-semibold text-gray-900 mb-4 text-center">Comparativo de Pessoas</h2>
+                 <div class="bar-chart-container">
+                    <canvas id="pessoasChart"></canvas>
+                 </div>
             </div>
         </div>
+
+        <!-- Conteúdo da Aba Relatório -->
+        <div id="reportContent" class="hidden">
+             <p id="report-placeholder" class="text-center text-gray-500 mt-10">Carregue um arquivo na aba "Carregar Arquivo" para gerar o relatório.</p>
+            <div id="report-data" class="bg-white p-8 rounded-xl shadow-md text-gray-700 space-y-4 hidden">
+                <h2 class="text-2xl font-bold text-gray-900 mb-6 border-b pb-4">Quantitativo de Unidades DFT</h2>
+                <p class="text-lg">Total de unidades com DFT cadastrado: <strong id="reportTotalUnidades" class="text-gray-900 font-semibold">-</strong></p>
+                
+                <div class="mt-6 border-t pt-6">
+                    <h3 class="text-xl font-semibold text-gray-800 mb-3">Entregas adicionadas</h3>
+                    <p>Unidades com entregas adicionadas: <strong id="reportUnidadesComEntregas" class="text-gray-900 font-semibold">-</strong></p>
+                    <p>Percentual de unidades com entregas adicionadas: <strong id="reportPercentualEntregas" class="text-green-600 font-semibold">-</strong></p>
+                </div>
         
-        <!-- Novo Gráfico de Barras -->
-        <div id="bar-chart-section" class="bg-white p-6 rounded-xl shadow-md hidden">
-             <h2 class="text-xl font-semibold text-gray-900 mb-4 text-center">Comparativo de Pessoas</h2>
-             <div class="bar-chart-container">
-                <canvas id="pessoasChart"></canvas>
-             </div>
+                <div class="mt-6 border-t pt-6">
+                    <h3 class="text-xl font-semibold text-gray-800 mb-3">Esforço Concluído</h3>
+                    <p>Unidades com esforço concluído (≥100% de esforço): <strong id="reportUnidadesComEsforco" class="text-gray-900 font-semibold">-</strong></p>
+                    <p>Percentual de unidades com esforço concluído: <strong id="reportPercentualEsforco" class="text-blue-600 font-semibold">-</strong></p>
+                </div>
+        
+                <div class="mt-6 border-t pt-6">
+                    <h3 class="text-xl font-semibold text-gray-800 mb-3">Comparação de Pessoas</h3>
+                    <p>Quantidade total de pessoas cadastradas: <strong id="reportTotalPessoas" class="text-gray-900 font-semibold">-</strong></p>
+                    <p>Quantidade de pessoas com esforço preenchido: <strong id="reportPessoasComEsforco" class="text-gray-900 font-semibold">-</strong></p>
+                    <p>Quantidade que ainda falta preencher esforço: <strong id="reportPessoasFaltando" class="text-red-600 font-semibold">-</strong></p>
+                </div>
+            </div>
         </div>
 
     </div>
@@ -93,6 +148,19 @@
     <script>
         const fileInput = document.getElementById('fileInput');
         const fileNameDisplay = document.getElementById('fileName');
+        
+        // Abas e Conteúdos
+        const tabUpload = document.getElementById('tab-upload');
+        const tabDashboard = document.getElementById('tab-dashboard');
+        const tabReport = document.getElementById('tab-report');
+        const uploadContent = document.getElementById('uploadContent');
+        const dashboardContent = document.getElementById('dashboardContent');
+        const reportContent = document.getElementById('reportContent');
+
+        // Placeholders e Seções de Dados
+        const dashboardPlaceholder = document.getElementById('dashboard-placeholder');
+        const reportPlaceholder = document.getElementById('report-placeholder');
+        const reportData = document.getElementById('report-data');
         const metricsSection = document.getElementById('metrics-section');
         const chartsSection = document.getElementById('charts-section');
         const barChartSection = document.getElementById('bar-chart-section');
@@ -101,12 +169,30 @@
         let esforcoChartInstance = null;
         let pessoasChartInstance = null;
 
-        // Registrar plugin de rótulos
         Chart.register(ChartDataLabels);
-
-        // Configurações globais para os gráficos
-        Chart.defaults.color = '#4b5563'; // Cor cinza para texto
+        Chart.defaults.color = '#4b5563';
         Chart.defaults.font.family = "'Inter', 'sans-serif'";
+
+        // Lógica das Abas
+        function switchTab(activeTab) {
+            const tabs = [tabUpload, tabDashboard, tabReport];
+            const contents = [uploadContent, dashboardContent, reportContent];
+            
+            tabs.forEach((tab, index) => {
+                const content = contents[index];
+                if (tab === activeTab) {
+                    tab.classList.add('tab-active');
+                    content.classList.remove('hidden');
+                } else {
+                    tab.classList.remove('tab-active');
+                    content.classList.add('hidden');
+                }
+            });
+        }
+
+        tabUpload.addEventListener('click', () => switchTab(tabUpload));
+        tabDashboard.addEventListener('click', () => switchTab(tabDashboard));
+        tabReport.addEventListener('click', () => switchTab(tabReport));
 
         fileInput.addEventListener('change', (event) => {
             const file = event.target.files[0];
@@ -131,35 +217,29 @@
                     alert("Não foi possível processar o arquivo. Verifique se o formato está correto.");
                 }
             };
-            reader.onerror = function(error) {
-                console.error("Erro ao ler o arquivo:", error);
-                alert("Não foi possível ler o arquivo.");
-            };
             reader.readAsArrayBuffer(file);
         }
 
         function processDataAndRender(data) {
             // --- Cálculos ---
             const totalUnidades = data.length;
-            // A análise de entregas agora usa a coluna "Entregas adicionadas"
             const unidadesComEntregas = data.filter(row => row['Entregas adicionadas'] === 'Sim').length;
-            
-            // Corrigido para tratar valores como string ou número
-            const unidadesComEsforcoConcluido = data.filter(row => {
-                const esforco = row['% de Esforço'];
-                return parseFloat(esforco) >= 100;
-            }).length;
-
+            const unidadesComEsforcoConcluido = data.filter(row => parseFloat(row['% de Esforço']) >= 100).length;
             const totalPessoas = data.reduce((sum, row) => sum + (parseInt(row['Qtd. Pessoas']) || 0), 0);
             const pessoasComEsforco = data.reduce((sum, row) => sum + (parseInt(row['Qtd. Pessoas c/ Esforço']) || 0), 0);
             const pessoasFaltando = totalPessoas - pessoasComEsforco;
+            const percentualEntregas = totalUnidades > 0 ? ((unidadesComEntregas / totalUnidades) * 100).toFixed(2) + '%' : '0.00%';
+            const percentualEsforco = totalUnidades > 0 ? ((unidadesComEsforcoConcluido / totalUnidades) * 100).toFixed(2) + '%' : '0.00%';
 
-            // --- Exibir seções ---
+            // --- Esconder Placeholders e Exibir Seções ---
+            dashboardPlaceholder.classList.add('hidden');
+            reportPlaceholder.classList.add('hidden');
+            reportData.classList.remove('hidden');
             metricsSection.classList.remove('hidden');
             chartsSection.classList.remove('hidden');
             barChartSection.classList.remove('hidden');
             
-            // --- Atualizar Métricas ---
+            // --- Atualizar Métricas do Dashboard ---
             document.getElementById('totalUnidades').textContent = totalUnidades;
             document.getElementById('totalPessoas').textContent = totalPessoas;
             document.getElementById('pessoasComEsforco').textContent = pessoasComEsforco;
@@ -169,27 +249,27 @@
             renderEntregasChart(unidadesComEntregas, totalUnidades - unidadesComEntregas);
             renderEsforcoChart(unidadesComEsforcoConcluido, totalUnidades - unidadesComEsforcoConcluido);
             renderPessoasChart(totalPessoas, pessoasComEsforco, pessoasFaltando);
+
+            // --- Preencher Aba de Relatório ---
+            document.getElementById('reportTotalUnidades').textContent = totalUnidades;
+            document.getElementById('reportUnidadesComEntregas').textContent = unidadesComEntregas;
+            document.getElementById('reportPercentualEntregas').textContent = percentualEntregas;
+            document.getElementById('reportUnidadesComEsforco').textContent = unidadesComEsforcoConcluido;
+            document.getElementById('reportPercentualEsforco').textContent = percentualEsforco;
+            document.getElementById('reportTotalPessoas').textContent = totalPessoas;
+            document.getElementById('reportPessoasComEsforco').textContent = pessoasComEsforco;
+            document.getElementById('reportPessoasFaltando').textContent = pessoasFaltando;
+            
+            // Mudar para a aba do dashboard automaticamente
+            switchTab(tabDashboard);
         }
         
         const doughnutChartOptions = {
             responsive: true,
             maintainAspectRatio: false,
             plugins: {
-                legend: {
-                    position: 'bottom',
-                    labels: {
-                        padding: 20,
-                        font: { size: 14 }
-                    }
-                },
-                tooltip: {
-                    backgroundColor: 'rgba(0, 0, 0, 0.7)',
-                    titleFont: { size: 16 },
-                    bodyFont: { size: 14 },
-                    padding: 10,
-                    bodyColor: '#fff',
-                    titleColor: '#fff'
-                },
+                legend: { position: 'bottom', labels: { padding: 20, font: { size: 14 }}},
+                tooltip: { backgroundColor: 'rgba(0, 0, 0, 0.7)', titleFont: { size: 16 }, bodyFont: { size: 14 }, padding: 10, bodyColor: '#fff', titleColor: '#fff' },
                 datalabels: {
                     formatter: (value, ctx) => {
                         let sum = ctx.chart.data.datasets[0].data.reduce((a, b) => a + b, 0);
@@ -198,10 +278,7 @@
                         return percentage;
                     },
                     color: '#fff',
-                    font: {
-                        weight: 'bold',
-                        size: 14
-                    }
+                    font: { weight: 'bold', size: 14 }
                 }
             }
         };
@@ -213,13 +290,7 @@
                 type: 'doughnut',
                 data: {
                     labels: ['Com Entregas', 'Sem Entregas'],
-                    datasets: [{
-                        data: [comEntregas, semEntregas],
-                        backgroundColor: ['#16a34a', '#dc2626'],
-                        borderColor: '#ffffff',
-                        borderWidth: 4,
-                        hoverOffset: 8
-                    }]
+                    datasets: [{ data: [comEntregas, semEntregas], backgroundColor: ['#16a34a', '#dc2626'], borderColor: '#ffffff', borderWidth: 4, hoverOffset: 8 }]
                 },
                 options: doughnutChartOptions
             });
@@ -232,13 +303,7 @@
                 type: 'doughnut',
                 data: {
                     labels: ['Esforço ≥ 100%', 'Esforço < 100%'],
-                    datasets: [{
-                        data: [concluido, naoConcluido],
-                        backgroundColor: ['#2563eb', '#f97316'],
-                        borderColor: '#ffffff',
-                        borderWidth: 4,
-                        hoverOffset: 8
-                    }]
+                    datasets: [{ data: [concluido, naoConcluido], backgroundColor: ['#2563eb', '#f97316'], borderColor: '#ffffff', borderWidth: 4, hoverOffset: 8 }]
                 },
                 options: doughnutChartOptions
             });
@@ -251,47 +316,17 @@
                 type: 'bar',
                 data: {
                     labels: ['Total de Pessoas', 'Com Esforço Preenchido', 'Faltam Preencher'],
-                    datasets: [{
-                        label: 'Quantidade de Pessoas',
-                        data: [total, comEsforco, faltando],
-                        backgroundColor: [
-                            '#6b7280', // cinza
-                            '#16a34a', // verde
-                            '#dc2626'  // vermelho
-                        ],
-                        borderRadius: 4,
-                    }]
+                    datasets: [{ label: 'Quantidade de Pessoas', data: [total, comEsforco, faltando], backgroundColor: ['#6b7280', '#16a34a', '#dc2626'], borderRadius: 4 }]
                 },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
-                    indexAxis: 'y', // Gráfico de barras horizontal
-                    plugins: {
-                        legend: { display: false },
-                        datalabels: {
-                           color: '#fff',
-                           anchor: 'center',
-                           align: 'center',
-                           font: { weight: 'bold' }
-                        }
-                    },
-                    scales: {
-                        x: {
-                            beginAtZero: true,
-                             grid: {
-                                color: '#e5e7eb'
-                             }
-                        },
-                        y: {
-                             grid: {
-                                display: false
-                             }
-                        }
-                    }
+                    indexAxis: 'y',
+                    plugins: { legend: { display: false }, datalabels: { color: '#fff', anchor: 'center', align: 'center', font: { weight: 'bold' }}},
+                    scales: { x: { beginAtZero: true, grid: { color: '#e5e7eb' }}, y: { grid: { display: false }}}
                 }
              });
         }
-
     </script>
 </body>
 </html>
